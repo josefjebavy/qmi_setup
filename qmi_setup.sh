@@ -9,6 +9,7 @@
 #   * NTT Docomo UIM card (Xi LTE SIM)
 #   * Sierra Wireless, Inc. Gobi 3000 wireless wan module
 #     (FRU 60Y3257, vendor and device id is 1199:9013)
+#   * ThinkPad X1 Carbon 4th with 1199:9079 Sierra Wireless, Inc. Sierra Wireless EM7455 Qualcomm Snapdragon X7 LTE-A
 #     memo:
 #       I recommend to check if your wwan module works fine
 #       for your mobile broadband provider with Windows
@@ -25,14 +26,16 @@
 # your wwan device name created by qmi_wwan kernel module
 # check it with "ip a" or "ifconfig -a". it may be wwan0?
 WWAN_DEV=wwp0s29u1u4
+WWAN_DEV=wwp0s20f0u2i12
 # your cdc_wdm modem location
 CDC_WDM=/dev/cdc-wdm0
 # this script uses following qmi commands
 QMICLI=/usr/bin/qmicli
 QMI_NETWORK=/usr/bin/qmi-network
 # the places of following commands vary depending on your distribution
-IFCONFIG=/bin/ifconfig
+IFCONFIG=/sbin/ifconfig
 DHCPCD=/sbin/dhcpcd
+DHCPCD=/usr/sbin/dhclient
 SUDO=/usr/bin/sudo
 
 function helpmsg {
@@ -42,6 +45,7 @@ function helpmsg {
 
 function qmi_start {
     $COMMAND_PREFIX $IFCONFIG $WWAN_DEV up
+    $COMMAND_PREFIX $QMICLI -d $CDC_WDM --dms-set-fcc-authentication
     $COMMAND_PREFIX $QMICLI -d $CDC_WDM --dms-set-operating-mode=online
     if [ $? -ne 0 ]; then
 	echo "your wwan device may be RFKilled?"
